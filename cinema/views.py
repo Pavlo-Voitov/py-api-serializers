@@ -1,5 +1,7 @@
 
 from rest_framework import viewsets
+from django.db.models import QuerySet
+from rest_framework.serializers import Serializer
 
 from cinema.models import Movie, MovieSession, Genre, Actor, CinemaHall
 from cinema.serializers import (MovieSerializer,
@@ -19,14 +21,14 @@ class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> type[Serializer]:
         if self.action == "list":
             return MovieListSerializer
         elif self.action == "retrieve":
             return MovieRetrieveSerializer
         return MovieSerializer
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[Movie]:
         queryset = self.queryset
         if self.action in ("list", "retrieve"):
             queryset = queryset.prefetch_related("genres", "actors")
@@ -43,7 +45,7 @@ class ActorViewSet(viewsets.ModelViewSet):
     queryset = Actor.objects.all()
     serializer_class = ActorSerializer
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> type[Serializer]:
         if self.action == "list":
             return ActorListSerializer
         return ActorSerializer
@@ -54,19 +56,19 @@ class CinemaHallViewSet(viewsets.ModelViewSet):
     serializer_class = CinemaHallSerializer
 
 
-class MoviSessionViewSet(viewsets.ModelViewSet):
+class MovieSessionViewSet(viewsets.ModelViewSet):
 
     queryset = MovieSession.objects.all()
     serializer_class = MovieSessionSerializer
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> type[Serializer]:
         if self.action == "list":
             return MovieSessionListSerializer
         if self.action == "retrieve":
             return MovieSessionRetrieveSerializer
         return MovieSessionSerializer
 
-    def get_queryset(self):
+    def get_queryset(self) -> QuerySet[MovieSession]:
         queryset = self.queryset
         if self.action in ("list", "retrieve"):
             queryset = queryset.select_related("movie", "cinema_hall")
